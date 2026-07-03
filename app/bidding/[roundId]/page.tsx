@@ -9,6 +9,7 @@ interface Bid {
   company_id: string;
   amount: number;
   is_ai: boolean;
+  reasoning?: string | null;
   created_at: string;
   companies?: { name: string };
 }
@@ -188,6 +189,9 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
             by {bids[0].companies?.name ?? "AI Company"} {bids[0].is_ai && "🤖"}
           </p>
         )}
+        {bids[0]?.is_ai && bids[0]?.reasoning && (
+          <p className="text-xs text-gray-600 mt-2 italic">{bids[0].reasoning}</p>
+        )}
       </div>
 
       <div className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-6 mb-6">
@@ -240,12 +244,17 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
         {bids.map((bid) => (
           <div
             key={bid.id}
-            className="flex justify-between px-4 py-3 bg-[#17171a] border border-[#2a2a2e] rounded-lg"
+            className="px-4 py-3 bg-[#17171a] border border-[#2a2a2e] rounded-lg"
           >
-            <span>
-              {bid.companies?.name ?? "AI Company"} {bid.is_ai && "🤖"}
-            </span>
-            <span className="text-karat font-semibold">{bid.amount.toLocaleString()} Karat</span>
+            <div className="flex justify-between">
+              <span>
+                {bid.companies?.name ?? "AI Company"} {bid.is_ai && "🤖"}
+              </span>
+              <span className="text-karat font-semibold">{bid.amount.toLocaleString()} Karat</span>
+            </div>
+            {bid.is_ai && bid.reasoning && (
+              <p className="text-xs text-gray-500 mt-1 italic">{bid.reasoning}</p>
+            )}
           </div>
         ))}
       </div>

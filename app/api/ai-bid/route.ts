@@ -1,10 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "../../../lib/supabaseAdmin";
+import { settleIfExpired } from "../../../lib/settleRound";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
+function generateReasoning(params: {
+  personaName: string;
+  categoryWeight: number;
+  rarityScore: number;
+  currentHighest: number;
+  walkAwayPrice: number;
+  fairValue: number;
+  aggressionFactor: number;
+  category: string;
+}): string {
+  const { personaName, categoryWeight, rarityScore, currentHighest, walkAwayPrice, fairValue, aggressionFactor, category } = params;
+
+  const priceRatio = currentHighest > 0 ? currentHighest / fairValue : 0;
+  const distanceToWalkaway = (walkAwayPrice - currentHighest) / walkAwayPrice;
+
+  // High category expertise
+  if (categoryWeight >= 1.3) {
+    return `${personaName} recognizes strong ${category} expertise here and bids with confidence.`;
+  }
+
+  // Very rare item
+  if (rarityScore >= 80) {
+    return `${personaName} flags exceptional rarity (${rarityScore}/100) — willing to stretch valuation.`;
+  }
+
+  // Getting close to walk-away threshold
+  if (distanceToWalkaway < 0.15) {
+    return `${personaName} is approaching its valuation ceiling but pushes one more increment.`;
+  }
+
+  // High aggression persona
+  if (aggressionFactor >= 0.3) {
+    return `${personaName} applies aggressive pressure, sensing rising competitive interest.`;
+  }
+
+  // Price still well below fair value
+  if (priceRatio < 0.6) {
+    return `${personaName} sees the current price well under fair value — an efficient entry point.`;
+  }
+
+  return `${personaName} continues bidding based on steady confidence in this asset's trajectory.`;
+}
 
 export async function POST(req: NextRequest) {
   const { round_id } = await req.json();
@@ -24,58 +69,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ skipped: true, reason: "round not live" });
   }
 
-  // If round has expired, close it and settle the winner
+  // If round has expired, settle it via the shared helper (admin client
+  // bypasses RLS, which is required to write the winner/treasury updates)
   if (new Date(round.ends_at).getTime() <= Date.now()) {
-    const { data: topBid } = await supabase
-      .from("bids")
-      .select("*")
-      .eq("round_id", round_id)
-      .order("amount", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (topBid) {
-      await supabase
-        .from("bidding_rounds")
-        .update({
-          status: "closed",
-          winning_company_id: topBid.company_id,
-          final_price: topBid.amount,
-        })
-        .eq("id", round_id);
-
-      await supabase
-        .from("items")
-        .update({
-          current_owner_company_id: topBid.company_id,
-          is_ai_owned: topBid.is_ai,
-        })
-        .eq("id", round.item_id);
-
-      // Deduct winning bid from company treasury, update win count
-      const { data: winningCompany } = await supabase
-        .from("companies")
-        .select("treasury_balance, win_count")
-        .eq("id", topBid.company_id)
-        .single();
-
-      if (winningCompany) {
-        await supabase
-          .from("companies")
-          .update({
-            treasury_balance: winningCompany.treasury_balance - topBid.amount,
-            win_count: winningCompany.win_count + 1,
-          })
-          .eq("id", topBid.company_id);
-      }
-    } else {
-      await supabase
-        .from("bidding_rounds")
-        .update({ status: "closed" })
-        .eq("id", round_id);
-    }
-
-    return NextResponse.json({ closed: true });
+    const result = await settleIfExpired(supabaseAdmin, round_id);
+    return NextResponse.json({ closed: true, ...result });
   }
 
   const item = round.items;
@@ -135,15 +133,27 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
+    const reasoning = generateReasoning({
+      personaName: persona.persona_name,
+      categoryWeight,
+      rarityScore: item.rarity_score,
+      currentHighest,
+      walkAwayPrice,
+      fairValue,
+      aggressionFactor: persona.aggression_factor,
+      category: item.category,
+    });
+
     await supabase.from("bids").insert({
       round_id,
       company_id: persona.company_id,
       placed_by: null,
       amount: newBid,
       is_ai: true,
+      reasoning,
     });
 
-    results.push({ persona: persona.persona_name, action: "bid_placed", amount: newBid });
+    results.push({ persona: persona.persona_name, action: "bid_placed", amount: newBid, reasoning });
   }
 
   return NextResponse.json({ round_id, results });

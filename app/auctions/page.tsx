@@ -1,9 +1,24 @@
 import Link from "next/link";
 import { supabase } from "../../lib/supabaseClient";
+import { settleIfExpired } from "../../lib/settleRound";
 
 export const revalidate = 0;
 
 export default async function Auctions() {
+  // Settle any live rounds that have already expired before showing the list
+  const { data: liveRounds } = await supabase
+    .from("bidding_rounds")
+    .select("id, ends_at")
+    .eq("status", "live");
+
+  if (liveRounds) {
+    for (const r of liveRounds) {
+      if (new Date(r.ends_at).getTime() <= Date.now()) {
+        await settleIfExpired(supabase, r.id);
+      }
+    }
+  }
+
   const { data: rounds } = await supabase
     .from("bidding_rounds")
     .select("*, items(*)")
@@ -19,16 +34,18 @@ export default async function Auctions() {
       ) : (
         <div className="space-y-3">
           {rounds.map((r: any) => (
-            <Link
+            <div
               key={r.id}
-              href={`/bidding/${r.id}`}
-              className="block bg-[#17171a] border border-[#2a2a2e] rounded-xl p-5 hover:border-karat transition"
+              className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-5 hover:border-karat transition"
             >
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">
+                  <Link
+                    href={`/items/${r.items?.id}`}
+                    className="text-lg font-semibold text-white hover:text-karat transition"
+                  >
                     {r.items?.name}
-                  </h2>
+                  </Link>
                   <p className="text-sm text-gray-400 capitalize">
                     {r.items?.category} · Rarity {r.items?.rarity_score}/100
                   </p>
@@ -43,7 +60,13 @@ export default async function Auctions() {
                   {r.status === "live" ? "LIVE" : "SCHEDULED"}
                 </span>
               </div>
-            </Link>
+              <Link
+                href={`/bidding/${r.id}`}
+                className="inline-block text-sm px-4 py-2 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition"
+              >
+                Enter Auction Room →
+              </Link>
+            </div>
           ))}
         </div>
       )}

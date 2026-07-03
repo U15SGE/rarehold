@@ -274,15 +274,16 @@ export default function CompanyDashboard({ params }: { params: { id: string } })
       ) : (
         <div className="space-y-2">
           {items.map((item) => (
-            <div
+            <a
               key={item.id}
-              className="flex justify-between px-4 py-3 bg-[#17171a] border border-[#2a2a2e] rounded-lg"
+              href={`/items/${item.id}`}
+              className="flex justify-between px-4 py-3 bg-[#17171a] border border-[#2a2a2e] rounded-lg hover:border-karat transition"
             >
               <span className="capitalize">
                 {item.name} <span className="text-gray-500">({item.category})</span>
               </span>
               <span className="text-karat">Rarity {item.rarity_score}/100</span>
-            </div>
+            </a>
           ))}
         </div>
       )}
