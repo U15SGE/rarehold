@@ -55,6 +55,12 @@ export default function Header() {
       </Link>
 
       <div className="flex items-center gap-4">
+        <Link href="/auctions" className="text-sm text-gray-300 hover:text-karat">
+          Auctions
+        </Link>
+        <Link href="/companies" className="text-sm text-gray-300 hover:text-karat">
+          Companies
+        </Link>
         {loading ? null : profile ? (
           <>
             <span className="text-sm text-gray-300">{profile.username}</span>

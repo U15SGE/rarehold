@@ -13,15 +13,24 @@ interface Bid {
   companies?: { name: string };
 }
 
+interface MyCompanyOption {
+  id: string;
+  name: string;
+  treasury_balance: number;
+}
+
 export default function BiddingRoom({ params }: { params: { roundId: string } }) {
   const { roundId } = params;
   const [round, setRound] = useState<any>(null);
   const [item, setItem] = useState<any>(null);
   const [bids, setBids] = useState<Bid[]>([]);
-  const [myCompany, setMyCompany] = useState<any>(null);
+  const [myCompanies, setMyCompanies] = useState<MyCompanyOption[]>([]);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
   const [bidAmount, setBidAmount] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+
+  const myCompany = myCompanies.find((c) => c.id === selectedCompanyId) ?? null;
 
   // Initial load
   useEffect(() => {
@@ -44,6 +53,25 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
         .order("amount", { ascending: false });
 
       if (bidData) setBids(bidData as any);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: memberships } = await supabase
+          .from("company_members")
+          .select("companies(id, name, treasury_balance)")
+          .eq("user_id", user.id);
+
+        const options =
+          memberships
+            ?.map((m: any) => m.companies)
+            .filter((c: any) => c) ?? [];
+
+        setMyCompanies(options);
+        if (options.length > 0) setSelectedCompanyId(options[0].id);
+      }
     }
     load();
   }, [roundId]);
@@ -80,6 +108,24 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
     }, 1000);
     return () => clearInterval(interval);
   }, [round]);
+
+  // Trigger the AI bidding engine every few seconds while this round is live.
+  // This simulates a real-time opponent without needing a separate server cron.
+  useEffect(() => {
+    if (!round || round.status !== "live") return;
+
+    const tick = () => {
+      fetch("/api/ai-bid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ round_id: roundId }),
+      }).catch(() => {});
+    };
+
+    tick();
+    const interval = setInterval(tick, 6000);
+    return () => clearInterval(interval);
+  }, [round, roundId]);
 
   const highestBid = bids[0]?.amount ?? 0;
 
@@ -145,21 +191,47 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
       </div>
 
       <div className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-6 mb-6">
-        <label className="block text-sm text-gray-400 mb-2">Your Bid (Karat)</label>
-        <div className="flex gap-3">
-          <input
-            type="number"
-            value={bidAmount}
-            onChange={(e) => setBidAmount(Number(e.target.value))}
-            className="flex-1 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
-          />
-          <button
-            onClick={placeBid}
-            className="px-6 py-2 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition"
-          >
-            Place Bid
-          </button>
-        </div>
+        {myCompanies.length === 0 ? (
+          <p className="text-sm text-gray-500">
+            You need to found or join a company before you can bid.
+          </p>
+        ) : (
+          <>
+            {myCompanies.length > 1 && (
+              <>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Bidding as
+                </label>
+                <select
+                  value={selectedCompanyId}
+                  onChange={(e) => setSelectedCompanyId(e.target.value)}
+                  className="w-full mb-4 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
+                >
+                  {myCompanies.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.treasury_balance.toLocaleString()} Karat)
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+            <label className="block text-sm text-gray-400 mb-2">Your Bid (Karat)</label>
+            <div className="flex gap-3">
+              <input
+                type="number"
+                value={bidAmount}
+                onChange={(e) => setBidAmount(Number(e.target.value))}
+                className="flex-1 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
+              />
+              <button
+                onClick={placeBid}
+                className="px-6 py-2 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition"
+              >
+                Place Bid
+              </button>
+            </div>
+          </>
+        )}
         {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
       </div>
 
