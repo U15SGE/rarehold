@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import { maxAllowedBid } from "../../../lib/companyMath";
+import BackButton from "../../../components/BackButton";
 
 interface Bid {
   id: string;
@@ -163,53 +164,69 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
   }
 
   if (!round || !item) {
-    return <main className="min-h-screen flex items-center justify-center">Loading auction...</main>;
+    return (
+      <main className="min-h-screen flex items-center justify-center text-parchment-dim">
+        Loading auction...
+      </main>
+    );
   }
+
+  const urgent = timeLeft > 0 && timeLeft <= 30;
 
   return (
     <main className="min-h-screen px-6 py-10 max-w-3xl mx-auto">
+      <BackButton fallbackHref="/auctions" />
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h1 className="text-3xl font-serif text-karat">{item.name}</h1>
-          <p className="text-gray-400 capitalize">{item.category} · Rarity {item.rarity_score}/100</p>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-verified opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-verified" />
+            </span>
+            <p className="rh-eyebrow">Live Auction</p>
+          </div>
+          <h1 className="text-3xl font-display text-parchment">{item.name}</h1>
+          <p className="text-parchment-dim capitalize">
+            {item.category} · Rarity {item.rarity_score}/100
+          </p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-gray-400">Time Remaining</p>
-          <p className="text-2xl font-mono text-karat">
+          <p className="text-xs text-parchment-dim mb-1">Time Remaining</p>
+          <p className={`text-2xl font-mono ${urgent ? "text-danger" : "text-karat"}`}>
             {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, "0")}
           </p>
         </div>
       </div>
 
-      <div className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-6 mb-6">
-        <p className="text-sm text-gray-400 mb-1">Current Highest Bid</p>
-        <p className="text-4xl font-bold text-karat">{highestBid.toLocaleString()} Karat</p>
+      <div className="rh-card p-6 mb-6">
+        <p className="text-sm text-parchment-dim mb-1">Current Highest Bid</p>
+        <p className="text-4xl font-mono font-medium text-karat">{highestBid.toLocaleString()} Karat</p>
         {bids[0] && (
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-parchment-dim mt-1">
             by {bids[0].companies?.name ?? "AI Company"} {bids[0].is_ai && "🤖"}
           </p>
         )}
         {bids[0]?.is_ai && bids[0]?.reasoning && (
-          <p className="text-xs text-gray-600 mt-2 italic">{bids[0].reasoning}</p>
+          <p className="text-xs text-parchment-dim/70 mt-2 italic">{bids[0].reasoning}</p>
         )}
       </div>
 
-      <div className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-6 mb-6">
+      <div className="rh-card p-6 mb-6">
         {myCompanies.length === 0 ? (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-parchment-dim">
             You need to found or join a company before you can bid.
           </p>
         ) : (
           <>
             {myCompanies.length > 1 && (
               <>
-                <label className="block text-sm text-gray-400 mb-2">
+                <label className="block text-sm text-parchment-dim mb-2">
                   Bidding as
                 </label>
                 <select
                   value={selectedCompanyId}
                   onChange={(e) => setSelectedCompanyId(e.target.value)}
-                  className="w-full mb-4 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
+                  className="w-full mb-4 px-3 py-2.5 rounded-lg bg-ink border border-line text-parchment focus:border-karat outline-none transition-colors"
                 >
                   {myCompanies.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -219,41 +236,35 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
                 </select>
               </>
             )}
-            <label className="block text-sm text-gray-400 mb-2">Your Bid (Karat)</label>
+            <label className="block text-sm text-parchment-dim mb-2">Your Bid (Karat)</label>
             <div className="flex gap-3">
               <input
                 type="number"
                 value={bidAmount}
                 onChange={(e) => setBidAmount(Number(e.target.value))}
-                className="flex-1 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
+                className="flex-1 px-3 py-2.5 rounded-lg bg-ink border border-line text-parchment font-mono focus:border-karat outline-none transition-colors"
               />
-              <button
-                onClick={placeBid}
-                className="px-6 py-2 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition"
-              >
+              <button onClick={placeBid} className="rh-btn-primary px-6 py-2.5">
                 Place Bid
               </button>
             </div>
           </>
         )}
-        {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+        {error && <p className="text-danger text-sm mt-2">{error}</p>}
       </div>
 
-      <h2 className="text-lg text-gray-300 mb-3">Live Bid Feed</h2>
+      <h2 className="text-lg font-display text-parchment mb-3">Live Bid Feed</h2>
       <div className="space-y-2">
         {bids.map((bid) => (
-          <div
-            key={bid.id}
-            className="px-4 py-3 bg-[#17171a] border border-[#2a2a2e] rounded-lg"
-          >
+          <div key={bid.id} className="rh-card px-4 py-3">
             <div className="flex justify-between">
-              <span>
+              <span className="text-parchment">
                 {bid.companies?.name ?? "AI Company"} {bid.is_ai && "🤖"}
               </span>
-              <span className="text-karat font-semibold">{bid.amount.toLocaleString()} Karat</span>
+              <span className="text-karat font-mono">{bid.amount.toLocaleString()} Karat</span>
             </div>
             {bid.is_ai && bid.reasoning && (
-              <p className="text-xs text-gray-500 mt-1 italic">{bid.reasoning}</p>
+              <p className="text-xs text-parchment-dim mt-1 italic">{bid.reasoning}</p>
             )}
           </div>
         ))}

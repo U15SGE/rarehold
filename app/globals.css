@@ -2,7 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #0e0e10;
-  color: #f5f1e8;
+:root {
+  --grain-opacity: 0.03;
 }
+
+* {
+  scrollbar-color: #2a2833 #0a0a0d;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0a0a0d;
+  color: #ece7db;
+  font-family: var(--font-body), sans-serif;
+  position: relative;
+}
+
+/* Subtle film-grain texture so black doesn't feel flat/templated */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display), serif;
+  letter-spacing: 0.01em;
+}
+
+/* Visible keyboard focus ring, gold-toned to match the palette */
+:focus-visible {
+  outline: 2px solid #c9a35a;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Reusable component classes ---------- */
+
+.rh-card {
+  background-color: #141318;
+  border: 1px solid #2a2833;
+  border-radius: 0.75rem;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.rh-card-hover:hover {
+  border-color: #c9a35a;
+  transform: translateY(-1px);
+}
+
+.rh-btn-primary {
+  background-color: #c9a35a;
+  color: #0a0a0d;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.rh-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.rh-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.rh-btn-secondary {
+  background-color: transparent;
+  border: 1px solid #c9a35a;
+  color: #c9a35a;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  transition: background-color 0.2s ease;
+}
+
+.rh-btn-secondary:hover {
+  background-color: rgba(201, 163, 90, 0.1);
+}
+
+.rh-btn-ghost {
+  color: #9c968a;
+  transition: color 0.2s ease;
+}
+
+.rh-btn-ghost:hover {
+  color: #ece7db;
+}
+
+.rh-eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #9c968a;
+}
+
+.rh-numeral {
+  font-family: var(--font-mono), monospace;
+}
+
+.rh-fade-up {
+  opacity: 0;
+  animation: fade-up 0.6s ease-out forwards;
+}
+

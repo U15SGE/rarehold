@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabase } from "../../lib/supabaseClient";
 import { settleIfExpired } from "../../lib/settleRound";
+import BackButton from "../../components/BackButton";
 
 export const revalidate = 0;
 
@@ -27,43 +28,39 @@ export default async function Auctions() {
 
   return (
     <main className="min-h-screen px-6 py-10 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-serif text-karat mb-8">Live Auctions</h1>
+      <BackButton fallbackHref="/" />
+      <p className="rh-eyebrow mb-1">Live Bidding Wars</p>
+      <h1 className="text-3xl font-display text-parchment mb-8">Auctions</h1>
 
       {!rounds || rounds.length === 0 ? (
-        <p className="text-gray-500">No active auctions right now.</p>
+        <p className="text-parchment-dim">No active auctions right now.</p>
       ) : (
         <div className="space-y-3">
           {rounds.map((r: any) => (
-            <div
-              key={r.id}
-              className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-5 hover:border-karat transition"
-            >
+            <div key={r.id} className="rh-card rh-card-hover p-5">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <Link
                     href={`/items/${r.items?.id}`}
-                    className="text-lg font-semibold text-white hover:text-karat transition"
+                    className="text-lg font-display text-parchment hover:text-karat transition-colors"
                   >
                     {r.items?.name}
                   </Link>
-                  <p className="text-sm text-gray-400 capitalize">
+                  <p className="text-sm text-parchment-dim capitalize">
                     {r.items?.category} · Rarity {r.items?.rarity_score}/100
                   </p>
                 </div>
                 <span
-                  className={`text-xs px-2 py-1 rounded ${
+                  className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded ${
                     r.status === "live"
-                      ? "bg-green-900 text-green-300"
-                      : "bg-gray-800 text-gray-400"
+                      ? "bg-verified/20 text-verified"
+                      : "bg-surface-raised text-parchment-dim"
                   }`}
                 >
-                  {r.status === "live" ? "LIVE" : "SCHEDULED"}
+                  {r.status === "live" ? "● Live" : "Scheduled"}
                 </span>
               </div>
-              <Link
-                href={`/bidding/${r.id}`}
-                className="inline-block text-sm px-4 py-2 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition"
-              >
+              <Link href={`/bidding/${r.id}`} className="rh-btn-primary inline-block text-sm px-4 py-2">
                 Enter Auction Room →
               </Link>
             </div>

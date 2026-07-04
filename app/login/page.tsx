@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import BackButton from "../../components/BackButton";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -34,53 +35,57 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-sm bg-[#17171a] border border-[#2a2a2e] rounded-xl p-8">
-        <h1 className="text-2xl font-serif text-karat mb-2">Welcome to Rarehold</h1>
+    <main className="min-h-[calc(100vh-73px)] flex items-center justify-center px-6">
+      <div className="w-full max-w-sm">
+        <BackButton fallbackHref="/" />
+        <div className="rh-card p-8">
+          <p className="rh-eyebrow mb-2">Member Access</p>
+          <h1 className="text-2xl font-display text-parchment mb-2">Welcome to Rarehold</h1>
 
-        {!sent ? (
-          <>
-            <p className="text-sm text-gray-400 mb-6">
-              Enter your email to get a login link.
-            </p>
-            <form onSubmit={sendMagicLink}>
-              <input
-                required
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full mb-4 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
-              />
-              {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+          {!sent ? (
+            <>
+              <p className="text-sm text-parchment-dim mb-6">
+                Enter your email to receive a login link.
+              </p>
+              <form onSubmit={sendMagicLink}>
+                <input
+                  required
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full mb-4 px-3 py-2.5 rounded-lg bg-ink border border-line text-parchment placeholder:text-parchment-dim/50 focus:border-karat outline-none transition-colors"
+                />
+                {error && <p className="text-danger text-sm mb-4">{error}</p>}
+                <button
+                  disabled={loading}
+                  className="rh-btn-primary w-full py-3 disabled:opacity-50"
+                >
+                  {loading ? "Sending..." : "Send Login Link"}
+                </button>
+              </form>
+            </>
+          ) : (
+            <div className="text-center py-2">
+              <p className="text-parchment mb-2">Check your inbox 📬</p>
+              <p className="text-sm text-parchment-dim">
+                We sent a login link to <strong className="text-parchment">{email}</strong>. Open it on
+                this device to sign in.
+              </p>
               <button
-                disabled={loading}
-                className="w-full py-3 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition disabled:opacity-50"
+                onClick={() => setSent(false)}
+                className="rh-btn-ghost mt-6 text-sm"
               >
-                {loading ? "Sending..." : "Send Login Link"}
+                Use a different email
               </button>
-            </form>
-          </>
-        ) : (
-          <div className="text-center">
-            <p className="text-gray-300 mb-2">Check your inbox 📬</p>
-            <p className="text-sm text-gray-500">
-              We sent a login link to <strong>{email}</strong>. Open it on
-              this device to sign in.
-            </p>
-            <button
-              onClick={() => setSent(false)}
-              className="mt-6 text-sm text-gray-500 hover:text-gray-300"
-            >
-              Use a different email
-            </button>
-          </div>
-        )}
+            </div>
+          )}
 
-        <p className="mt-6 text-xs text-gray-600 text-center">
-          New here? Clicking the link automatically creates your account
-          with 10,000 starting Karat.
-        </p>
+          <p className="mt-6 text-xs text-parchment-dim/60 text-center leading-relaxed">
+            New here? Clicking the link automatically creates your account
+            with 10,000 starting Karat.
+          </p>
+        </div>
       </div>
     </main>
   );

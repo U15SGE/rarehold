@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import { useRouter } from "next/navigation";
+import BackButton from "../../../components/BackButton";
 
 const COMPANY_CREATION_COST = 2000; // Karat, prevents spam companies
 const SECTORS = ["mixed", "paintings", "antiques", "metals", "collectibles", "vastu"];
@@ -91,61 +92,59 @@ export default function CreateCompany() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6">
-      <form
-        onSubmit={handleCreate}
-        className="w-full max-w-md bg-[#17171a] border border-[#2a2a2e] rounded-xl p-8"
-      >
-        <h1 className="text-2xl font-serif text-karat mb-6">Found a Company</h1>
+    <main className="min-h-[calc(100vh-73px)] flex items-center justify-center px-6 py-10">
+      <div className="w-full max-w-md">
+        <BackButton fallbackHref="/" />
+        <form onSubmit={handleCreate} className="rh-card p-8">
+          <p className="rh-eyebrow mb-2">Institution Charter</p>
+          <h1 className="text-2xl font-display text-parchment mb-6">Found a Company</h1>
 
-        <label className="block text-sm text-gray-400 mb-1">Company Name</label>
-        <input
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full mb-4 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
-          placeholder="e.g. Meerut Heritage Holdings"
-        />
+          <label className="block text-sm text-parchment-dim mb-1.5">Company Name</label>
+          <input
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full mb-4 px-3 py-2.5 rounded-lg bg-ink border border-line text-parchment placeholder:text-parchment-dim/50 focus:border-karat outline-none transition-colors"
+            placeholder="e.g. Meerut Heritage Holdings"
+          />
 
-        <label className="block text-sm text-gray-400 mb-1">Sector Focus</label>
-        <select
-          value={sector}
-          onChange={(e) => setSector(e.target.value)}
-          className="w-full mb-4 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
-        >
-          {SECTORS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+          <label className="block text-sm text-parchment-dim mb-1.5">Sector Focus</label>
+          <select
+            value={sector}
+            onChange={(e) => setSector(e.target.value)}
+            className="w-full mb-4 px-3 py-2.5 rounded-lg bg-ink border border-line text-parchment focus:border-karat outline-none transition-colors"
+          >
+            {SECTORS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
 
-        <label className="block text-sm text-gray-400 mb-1">
-          Your Initial Stake (Karat)
-        </label>
-        <input
-          required
-          type="number"
-          min={1000}
-          step={500}
-          value={initialStake}
-          onChange={(e) => setInitialStake(Number(e.target.value))}
-          className="w-full mb-2 px-3 py-2 rounded bg-[#0e0e10] border border-[#2a2a2e] text-white"
-        />
-        <p className="text-xs text-gray-500 mb-6">
-          Founding fee: {COMPANY_CREATION_COST} Karat (one-time, prevents spam
-          companies). Your stake becomes your ownership % in the company treasury.
-        </p>
+          <label className="block text-sm text-parchment-dim mb-1.5">
+            Your Initial Stake (Karat)
+          </label>
+          <input
+            required
+            type="number"
+            min={1000}
+            step={500}
+            value={initialStake}
+            onChange={(e) => setInitialStake(Number(e.target.value))}
+            className="w-full mb-2 px-3 py-2.5 rounded-lg bg-ink border border-line text-parchment focus:border-karat outline-none transition-colors font-mono"
+          />
+          <p className="text-xs text-parchment-dim/70 mb-6 leading-relaxed">
+            Founding fee: {COMPANY_CREATION_COST} Karat (one-time, prevents spam
+            companies). Your stake becomes your ownership % in the company treasury.
+          </p>
 
-        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+          {error && <p className="text-danger text-sm mb-4">{error}</p>}
 
-        <button
-          disabled={loading}
-          className="w-full py-3 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition disabled:opacity-50"
-        >
-          {loading ? "Creating..." : "Create Company"}
-        </button>
-      </form>
+          <button disabled={loading} className="rh-btn-primary w-full py-3 disabled:opacity-50">
+            {loading ? "Creating..." : "Create Company"}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

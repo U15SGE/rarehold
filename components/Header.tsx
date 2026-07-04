@@ -49,40 +49,42 @@ export default function Header() {
   }
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2e]">
-      <Link href="/" className="text-xl font-serif text-karat tracking-wide">
-        RAREHOLD
+    <header className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-10 py-4 border-b border-line bg-ink/85 backdrop-blur-md">
+      <Link
+        href="/"
+        className="text-lg font-display tracking-[0.15em] text-karat uppercase"
+      >
+        Rarehold
       </Link>
 
-      <div className="flex items-center gap-4">
-        <Link href="/auctions" className="text-sm text-gray-300 hover:text-karat">
+      <nav className="flex items-center gap-6 md:gap-8">
+        <Link href="/auctions" className="hidden sm:inline text-sm text-parchment-dim hover:text-karat transition-colors">
           Auctions
         </Link>
-        <Link href="/companies" className="text-sm text-gray-300 hover:text-karat">
+        <Link href="/companies" className="hidden sm:inline text-sm text-parchment-dim hover:text-karat transition-colors">
           Companies
         </Link>
-        {loading ? null : profile ? (
-          <>
-            <span className="text-sm text-gray-300">{profile.username}</span>
-            <span className="text-sm text-karat font-semibold">
-              {profile.karat_wallet.toLocaleString()} Karat
-            </span>
-            <button
-              onClick={handleLogout}
-              className="text-sm text-gray-500 hover:text-gray-300"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link
-            href="/login"
-            className="px-4 py-2 bg-karat text-ink text-sm font-semibold rounded-lg hover:opacity-90 transition"
-          >
-            Log In
-          </Link>
-        )}
-      </div>
+
+        <div className="flex items-center gap-4">
+          {loading ? null : profile ? (
+            <>
+              <div className="hidden sm:flex flex-col items-end leading-tight">
+                <span className="text-xs text-parchment-dim">{profile.username}</span>
+                <span className="text-sm font-mono text-karat font-medium">
+                  {profile.karat_wallet.toLocaleString()} Karat
+                </span>
+              </div>
+              <button onClick={handleLogout} className="rh-btn-ghost text-sm">
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="rh-btn-primary px-5 py-2 text-sm">
+              Log In
+            </Link>
+          )}
+        </div>
+      </nav>
     </header>
   );
 }

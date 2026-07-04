@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabase } from "../../lib/supabaseClient";
+import BackButton from "../../components/BackButton";
 
 export const revalidate = 0;
 
@@ -11,18 +12,19 @@ export default async function BrowseCompanies() {
 
   return (
     <main className="min-h-screen px-6 py-10 max-w-4xl mx-auto">
+      <BackButton fallbackHref="/" />
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-serif text-karat">Companies</h1>
-        <Link
-          href="/company/create"
-          className="px-4 py-2 bg-karat text-ink text-sm font-semibold rounded-lg hover:opacity-90 transition"
-        >
+        <div>
+          <p className="rh-eyebrow mb-1">The Network</p>
+          <h1 className="text-3xl font-display text-parchment">Companies</h1>
+        </div>
+        <Link href="/company/create" className="rh-btn-primary px-5 py-2.5 text-sm">
           Found a Company
         </Link>
       </div>
 
       {!companies || companies.length === 0 ? (
-        <p className="text-gray-500">
+        <p className="text-parchment-dim">
           No companies yet. Be the first to found one.
         </p>
       ) : (
@@ -31,27 +33,27 @@ export default async function BrowseCompanies() {
             <Link
               key={c.id}
               href={`/company/${c.id}`}
-              className="block bg-[#17171a] border border-[#2a2a2e] rounded-xl p-5 hover:border-karat transition"
+              className="rh-card rh-card-hover block p-5"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">{c.name}</h2>
-                  <p className="text-sm text-gray-400 capitalize">
+                  <h2 className="text-lg font-display text-parchment">{c.name}</h2>
+                  <p className="text-sm text-parchment-dim capitalize">
                     {c.sector_focus} ·{" "}
                     <span className="capitalize text-karat">{c.tier}</span>
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-400">Treasury</p>
-                  <p className="text-karat font-semibold">
+                  <p className="text-xs text-parchment-dim">Treasury</p>
+                  <p className="text-karat font-mono font-medium">
                     {c.treasury_balance.toLocaleString()} Karat
                   </p>
                 </div>
               </div>
-              <div className="flex gap-6 mt-3 text-xs text-gray-500">
-                <span>Power Score: {c.power_score}</span>
+              <div className="flex gap-6 mt-3 text-xs text-parchment-dim font-mono">
+                <span>Power Score {c.power_score}</span>
                 <span>
-                  Record: {c.win_count}W - {c.loss_count}L
+                  {c.win_count}W · {c.loss_count}L
                 </span>
               </div>
             </Link>

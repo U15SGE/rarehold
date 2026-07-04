@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabase } from "../../../lib/supabaseClient";
+import BackButton from "../../../components/BackButton";
 
 export const revalidate = 0;
 
@@ -14,7 +15,7 @@ export default async function ItemProvenance({ params }: { params: { id: string 
 
   if (!item) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <main className="min-h-screen flex items-center justify-center text-parchment-dim">
         Item not found.
       </main>
     );
@@ -55,38 +56,38 @@ export default async function ItemProvenance({ params }: { params: { id: string 
 
   return (
     <main className="min-h-screen px-6 py-10 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-serif text-karat mb-1">{item.name}</h1>
-      <p className="text-gray-400 capitalize mb-6">
-        {item.category} · Rarity {item.rarity_score}/100
-      </p>
+      <BackButton fallbackHref="/auctions" />
+      <p className="rh-eyebrow mb-1">{item.category} · Provenance Record</p>
+      <h1 className="text-3xl font-display text-parchment mb-1">{item.name}</h1>
+      <p className="text-parchment-dim mb-6">Rarity {item.rarity_score}/100</p>
 
       {item.description && (
-        <p className="text-gray-300 mb-8 leading-relaxed">{item.description}</p>
+        <p className="text-parchment/90 mb-8 leading-relaxed max-w-2xl">{item.description}</p>
       )}
 
       <div className="grid grid-cols-2 gap-4 mb-10">
-        <div className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-1">Current Owner</p>
-          <p className="text-lg text-white">
+        <div className="rh-card p-4">
+          <p className="text-xs text-parchment-dim mb-1">Current Owner</p>
+          <p className="text-lg text-parchment font-display">
             {item.companies?.name ?? "Unclaimed"}
           </p>
         </div>
-        <div className="bg-[#17171a] border border-[#2a2a2e] rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-1">Base Valuation</p>
-          <p className="text-lg text-karat">
+        <div className="rh-card p-4">
+          <p className="text-xs text-parchment-dim mb-1">Base Valuation</p>
+          <p className="text-lg text-karat font-mono">
             {item.base_valuation.toLocaleString()} Karat
           </p>
         </div>
       </div>
 
-      <h2 className="text-lg text-gray-300 mb-4">Provenance Timeline</h2>
-      <div className="space-y-4 border-l border-[#2a2a2e] pl-6">
+      <h2 className="text-lg font-display text-parchment mb-4">Provenance Timeline</h2>
+      <div className="space-y-5 border-l border-line pl-6">
         {timelineEvents.map((event, i) => (
           <div key={i} className="relative">
             <div className="absolute -left-[29px] top-1 w-3 h-3 rounded-full bg-karat" />
             <p className="text-karat text-sm font-semibold">{event.label}</p>
-            <p className="text-gray-300 text-sm">{event.detail}</p>
-            <p className="text-gray-600 text-xs mt-1">
+            <p className="text-parchment text-sm">{event.detail}</p>
+            <p className="text-parchment-dim/60 text-xs mt-1 font-mono">
               {new Date(event.date).toLocaleString()}
             </p>
           </div>
@@ -98,11 +99,7 @@ export default async function ItemProvenance({ params }: { params: { id: string 
           {rounds
             .filter((r: any) => r.status === "live")
             .map((r: any) => (
-              <Link
-                key={r.id}
-                href={`/bidding/${r.id}`}
-                className="inline-block px-6 py-3 bg-karat text-ink font-semibold rounded-lg hover:opacity-90 transition"
-              >
+              <Link key={r.id} href={`/bidding/${r.id}`} className="rh-btn-primary inline-block px-6 py-3">
                 View Live Auction →
               </Link>
             ))}
