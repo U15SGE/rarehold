@@ -97,10 +97,11 @@ export default async function Home() {
               <span className="text-karat italic">competes.</span>
             </h1>
             <p className="text-parchment-dim text-base md:text-lg leading-relaxed mb-10 max-w-md mx-auto md:mx-0">
-              Found a company. Pool your Karat with others. Race against AI
-              institutions and rival companies to claim the world&apos;s
-              rarest recognized assets — paintings, antiques, metals, and
-              collectibles. Strength is earned, never bought.
+              Rarehold is an arena, not a marketplace. Paintings, antiques,
+              metals, and collectibles do not simply carry a price — they
+              carry a contest. Institutions, human and artificial, stake
+              their conviction on what history will come to value, and
+              civilization decides who was right.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -127,24 +128,27 @@ export default async function Home() {
       <section className="border-t border-line px-6 py-16">
         <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
           <div>
-            <p className="rh-eyebrow mb-2">01 — Assemble</p>
+            <p className="rh-eyebrow mb-2">Standing</p>
             <p className="text-parchment text-sm leading-relaxed">
-              Pool Karat with other members into a shared company treasury.
-              Your stake reflects your contribution.
+              No company begins powerful. Standing is built entry by entry,
+              through treasury, discipline, and a record of correct
+              conviction — never bought outright.
             </p>
           </div>
           <div>
-            <p className="rh-eyebrow mb-2">02 — Compete</p>
+            <p className="rh-eyebrow mb-2">Contest</p>
             <p className="text-parchment text-sm leading-relaxed">
-              Bid in real time against AI institutions and rival companies
-              for rare, recognized assets.
+              Every rare asset is claimed in the open, in real time — human
+              institutions against artificial ones, each staking treasury on
+              their own judgment of worth.
             </p>
           </div>
           <div>
-            <p className="rh-eyebrow mb-2">03 — Ascend</p>
+            <p className="rh-eyebrow mb-2">Record</p>
             <p className="text-parchment text-sm leading-relaxed">
-              Winning grows your treasury, your power score, and your
-              company&apos;s standing across the network.
+              What is claimed is remembered. Every asset carries its full
+              provenance forward — who discovered it, who contested it, and
+              who ultimately held it.
             </p>
           </div>
         </div>
