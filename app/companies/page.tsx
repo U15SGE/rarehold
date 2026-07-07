@@ -7,7 +7,7 @@ export const revalidate = 0;
 export default async function BrowseCompanies() {
   const { data: companies } = await supabase
     .from("companies")
-    .select("id, name, sector_focus, treasury_balance, power_score, tier, win_count, loss_count")
+    .select("id, name, sector_focus, treasury_balance, power_score, discovery_score, tier, win_count, loss_count")
     .order("power_score", { ascending: false });
 
   return (
@@ -52,6 +52,7 @@ export default async function BrowseCompanies() {
               </div>
               <div className="flex gap-6 mt-3 text-xs text-parchment-dim font-mono">
                 <span>Power Score {c.power_score}</span>
+                <span className="text-karat">Discovery Score {c.discovery_score}</span>
                 <span>
                   {c.win_count}W · {c.loss_count}L
                 </span>

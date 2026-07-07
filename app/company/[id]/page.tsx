@@ -23,6 +23,7 @@ interface Company {
   tier: string;
   win_count: number;
   loss_count: number;
+  discovery_score: number;
   member_cap: number;
 }
 
@@ -190,12 +191,16 @@ export default function CompanyDashboard({ params }: { params: { id: string } })
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 my-8">
+      <div className="grid grid-cols-4 gap-4 my-8">
         <div className="rh-card p-4">
           <p className="text-xs text-parchment-dim mb-1">Treasury</p>
           <p className="text-xl font-mono text-karat">
             {company.treasury_balance.toLocaleString()}
           </p>
+        </div>
+        <div className="rh-card p-4">
+          <p className="text-xs text-parchment-dim mb-1">Discovery Score</p>
+          <p className="text-xl font-mono text-karat">{company.discovery_score}</p>
         </div>
         <div className="rh-card p-4">
           <p className="text-xs text-parchment-dim mb-1">Members</p>
