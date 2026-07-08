@@ -61,8 +61,8 @@ export default function Header() {
         <Link href="/auctions" className="hidden sm:inline text-sm text-parchment-dim hover:text-karat transition-colors">
           Auctions
         </Link>
-        <Link href="/companies" className="hidden sm:inline text-sm text-parchment-dim hover:text-karat transition-colors">
-          Companies
+        <Link href="/institutions" className="hidden sm:inline text-sm text-parchment-dim hover:text-karat transition-colors">
+          Institutions
         </Link>
 
         <div className="flex items-center gap-4">

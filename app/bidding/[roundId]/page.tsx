@@ -134,7 +134,7 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
   async function placeBid() {
     setError(null);
     if (!myCompany) {
-      setError("Join or select a company first.");
+      setError("Join or select an institution first.");
       return;
     }
 
@@ -214,7 +214,7 @@ export default function BiddingRoom({ params }: { params: { roundId: string } })
       <div className="rh-card p-6 mb-6">
         {myCompanies.length === 0 ? (
           <p className="text-sm text-parchment-dim">
-            You need to found or join a company before you can bid.
+            You need to found or join an institution before you can bid.
           </p>
         ) : (
           <>

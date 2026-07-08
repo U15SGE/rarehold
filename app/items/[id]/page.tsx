@@ -142,7 +142,7 @@ export default async function ItemProvenance({ params }: { params: { id: string 
       <div className="space-y-2 mb-6">
         {humanClassifications.length === 0 ? (
           <p className="text-sm text-parchment-dim">
-            No company has attempted a classification yet. Be the first.
+            No institution has attempted a classification yet. Be the first.
           </p>
         ) : (
           humanClassifications.map((c: any) => (

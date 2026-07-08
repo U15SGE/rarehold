@@ -42,7 +42,7 @@ async function getTickerItems(): Promise<string[]> {
     .limit(3);
 
   recentCompanies?.forEach((c) => {
-    items.push(`COMPANY FOUNDED — ${c.name} enters the ${c.tier} tier`);
+    items.push(`INSTITUTION REGISTERED — ${c.name} enters the ${c.tier} tier`);
   });
 
   if (items.length === 0) {
@@ -105,11 +105,11 @@ export default async function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Link href="/company/create" className="rh-btn-primary px-7 py-3.5 text-center">
-                Found a Company
+              <Link href="/institution/create" className="rh-btn-primary px-7 py-3.5 text-center">
+                Register an Institution
               </Link>
-              <Link href="/companies" className="rh-btn-secondary px-7 py-3.5 text-center">
-                Browse Companies
+              <Link href="/institutions" className="rh-btn-secondary px-7 py-3.5 text-center">
+                Browse Institutions
               </Link>
             </div>
 
@@ -130,7 +130,7 @@ export default async function Home() {
           <div>
             <p className="rh-eyebrow mb-2">Standing</p>
             <p className="text-parchment text-sm leading-relaxed">
-              No company begins powerful. Standing is built entry by entry,
+              No institution begins powerful. Standing is built entry by entry,
               through treasury, discipline, and a record of correct
               conviction — never bought outright.
             </p>

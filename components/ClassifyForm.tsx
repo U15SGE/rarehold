@@ -87,7 +87,7 @@ export default function ClassifyForm({ itemId }: { itemId: string }) {
   if (myCompanies.length === 0) {
     return (
       <p className="text-sm text-parchment-dim">
-        Found or join a company to submit a classification claim.
+        Found or join an institution to submit a classification claim.
       </p>
     );
   }
@@ -110,7 +110,7 @@ export default function ClassifyForm({ itemId }: { itemId: string }) {
   }
 
   if (alreadySubmitted) {
-    return <p className="text-sm text-parchment-dim">Your company has already submitted a classification for this asset.</p>;
+    return <p className="text-sm text-parchment-dim">Your institution has already submitted a classification for this asset.</p>;
   }
 
   return (
@@ -169,7 +169,7 @@ export default function ClassifyForm({ itemId }: { itemId: string }) {
       </button>
       <p className="text-xs text-parchment-dim/70 leading-relaxed">
         First correct classification earns 100 Discovery Score. Later correct
-        classifications earn 20. Each company may submit once per asset.
+        classifications earn 20. Each institution may submit once per asset.
       </p>
     </form>
   );
